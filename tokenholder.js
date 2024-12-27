@@ -1,4 +1,3 @@
-const puppeteer = require("puppeteer");
 const WebSocket = require("ws");
 const encrypted1 = require("./fetch1.js");
 const encrypted2 = require("./fetch2.js");
@@ -49,9 +48,11 @@ function fetchse() {
   });
 }
 function trySend(data) {
-  
+  if (!data.server) {
+    return;
+  }
   const socketUrl = `${data.server}?${lut3}`;
-  if (token && lut1 && lut2 && recaptchaToken) {
+  if (token && lut1 && lut2) {
     log("connecting");
     const socket = new WebSocket(socketUrl, {
       headers: {
@@ -70,7 +71,7 @@ function trySend(data) {
     socket.binaryType = "arraybuffer";
     socket.addEventListener("open", () => {
       log("WebSocket connection opened");
-      socket.send(JSON.stringify(["jeralo", 4040, 2360, 52, data.token, data.token_id, 0, 0, 0, 0, 0, 1, 0, 0, 0, null, token, recaptchaToken, lut1, lut2]));
+      socket.send(JSON.stringify(["jeralo", 4040, 2360, 52, data.token, data.token_id, 0, 0, 0, 0, 0, 1, 0, 0, 0, null, token, data.recaptcha, lut1, lut2]));
     });
     socket.addEventListener("message", event => {
       if (typeof event.data == "string") {
@@ -113,49 +114,15 @@ wss.on("connection", ws => {
   console.log("Client connected.");
   ws.on("message", message => {
     const data = JSON.parse(message);
-    log(data)
-    async function scrapeStarve() {
-      const browser = await puppeteer.launch({
-        headless: true
-      });
-      const page = await browser.newPage();
-      await page.goto("https://starve.io");
-      const getRecaptchaToken = async () => {
-        return await page.evaluate(() => {
-          return new Promise((resolve, reject) => {
-            grecaptcha.ready(function () {
-              grecaptcha.execute("6LdvBaEjAAAAAIKTgdecsZBehRxhVZOIDzG9MvXg", {
-                action: "validate_recaptcha"
-              }).then(function (token) {
-                resolve(token);
-              }).catch(error => {
-                reject(error);
-              });
-            });
-          });
-        });
-      };
-      setTimeout(async () => {
-        try {
-          recaptchaToken = await getRecaptchaToken();
-          fetchse();
-          console.log("Recaptcha Token:", recaptchaToken);
-          setTimeout(() => {
-            trySend(data);
-          }, 2000);
-        } catch (error) {
-          console.error("Error fetching recaptcha token:", error);
-        }
-      }, 1000);
-      console.log("Logging recaptcha token every 10 seconds. Press Ctrl+C to stop.");
-    }
-    scrapeStarve().catch(console.error);
+    log(data);
+    fetchse();
+    setTimeout(() => {
+      trySend(data);
+    }, 2000);
   });
-
   ws.on("close", () => {
     console.log("Client disconnected.");
   });
-
   ws.on("error", error => {
     console.error(`WebSocket error: ${error}`);
   });
