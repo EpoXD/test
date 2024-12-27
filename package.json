@@ -1,0 +1,16 @@
+{
+  "name": "tokholder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tokenholder.js",
+  "scripts": {
+    "start": "node tokenholder.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^23.11.1",
+    "ws": "^8.18.0"
+  }
+}
