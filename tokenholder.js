@@ -91,10 +91,7 @@ function trySend(data) {
       players.push(socket)
       log("WebSocket connection opened");
       socket.send(JSON.stringify(["jeralo", 4040, 2360, 52, data.token, data.token_id, 0, 0, 0, 0, 0, 1, 0, 0, 0, null, token, data.recaptcha, lut1, lut2]));
-      setInterval(() => {
-                socket.send(WINDOW12[0].stringify([5, "TOKEN HOLDER?"]));
 
-      })
     });
     socket.addEventListener("message", event => {
       if (typeof event.data == "string") {
@@ -121,7 +118,7 @@ function trySend(data) {
     setInterval(() => {
       if (socket.readyState == 1) {
         // socket.send(JSON.stringify([33, 201]))
-        // socket.send(JSON.stringify([5, "TOKEN HOLDER?"]));
+        // socket.send(WINDOW12[0].stringify([5, "TOKEN HOLDER?"]));
       }
     }, 2000);
   }
