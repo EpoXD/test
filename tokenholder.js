@@ -1,6 +1,7 @@
 const WebSocket = require("ws");
 const encrypted1 = require("./fetch1.js");
 const encrypted2 = require("./fetch2.js");
+
 const {
   ᐃΔⲆΔΔⵠⲆ,
   ⵠⲆΔⲆⲆⵠΔⲆᐃ
@@ -16,8 +17,22 @@ let lut2;
 let lut3;
 let info1;
 let info2;
+let players = []
+
 let fetchToken = ᐃΔⲆΔΔⵠⲆ;
 let decode = ⵠⲆΔⲆⲆⵠΔⲆᐃ;
+
+
+
+  WINDOW12 = [{}];
+  WINDOW12[0].stringify = function (_data) {
+    var _a = new Uint8Array(new ArrayBuffer(_data.length));
+    for (var i = 0; i < _data.length; i++) {
+      _a[i] = _data[i];
+    }
+    return _a;
+  };
+
 function fetchse() {
   request(`https://token.starve.io/token?id=0`, function (b) {
     var a = b.split("_");
@@ -27,9 +42,12 @@ function fetchse() {
     log(token);
   });
   request(`https://token2.starve.io/let`, function (b) {
+    
     b = b.split(":");
     var a = b[0].split("_");
     var c = a[0] + "_";
+        log(a[1])
+
     a = Math.abs(encrypted1[a[1]]);
     lut1 = c + a;
     info1 = a;
@@ -70,8 +88,13 @@ function trySend(data) {
     });
     socket.binaryType = "arraybuffer";
     socket.addEventListener("open", () => {
+      players.push(socket)
       log("WebSocket connection opened");
       socket.send(JSON.stringify(["jeralo", 4040, 2360, 52, data.token, data.token_id, 0, 0, 0, 0, 0, 1, 0, 0, 0, null, token, data.recaptcha, lut1, lut2]));
+      setInterval(() => {
+                socket.send(WINDOW12[0].stringify([5, "TOKEN HOLDER?"]));
+
+      })
     });
     socket.addEventListener("message", event => {
       if (typeof event.data == "string") {
@@ -85,12 +108,8 @@ function trySend(data) {
           case 16:
             log(msg[2]);
             if (msg[2] <= 90) {
-              socket.send(JSON.stringify([33, 201]));
-            }
-            break;
-          case 38:
-            if (msg[1] <= 90) {
-              socket.send(JSON.stringify([33, 201]));
+              
+              socket.send(WINDOW12[0].stringify([33, 201]))
             }
             break;
         }
@@ -107,6 +126,10 @@ function trySend(data) {
     }, 2000);
   }
 }
+
+
+
+
 const wss = new WebSocket.Server({
   port: 8080
 });
